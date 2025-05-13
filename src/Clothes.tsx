@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, DragEvent } from 'react';
 
 interface Order {
   product: 'tshirt' | 'sweater';
@@ -16,6 +16,7 @@ export default function Clothes() {
   const [text, setText] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
   const [price, setPrice] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const calculatePrice = (): void => {
     let basePrice = 0;
@@ -37,6 +38,26 @@ export default function Clothes() {
     const file = e.target.files?.[0] || null;
     setImage(file);
   };
+
+  /** ------Img drag&drop------ */
+  
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if(file&&file.type.startsWith('image/')) {
+      setImage(file);
+    }
+  }
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  /** ------End drag&drop------ */
 
   const handleSubmit = async (): Promise<void> => {
     const formData = new FormData();
@@ -122,12 +143,26 @@ export default function Clothes() {
 
       <div>
         <label className="block font-medium mb-1">Upload Image (+$10)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="w-full p-2 border rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
+        <div 
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={`w-full p-4 border-2 border-dashed rounded text-center cursor-pointer transition-colors ${isDragging ? 'bg-blue-50 border-blue-400' : 'border-gray-300'}`}
+        > 
+          <p className="text-sm text-gray-500">Drag & drop image here, or click to select file</p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+            id='fileInput'
+            // className="w-full p-2 border rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <label htmlFor="fileInput" className="inline-block mt-2 px-4 py-2 bg-blue-500 text-white text-sm rounded cursor-pointer hover:bg-blue-600">
+            Browse
+          </label>
+        </div>
+        {image && <p className="text-sm text-green-600 mt-1">Selected: {image.name}</p>}
       </div>
 
       <div className="flex justify-between items-center">
