@@ -16,7 +16,7 @@ function App() {
     fetchData();
   }, []);
   return (
-    <div className="App">
+    <div className="App ">
      
       {loading ? "loading..." : message}
       <Clothes />
