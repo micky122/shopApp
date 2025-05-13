@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-
+import Clothes from './Clothes';
 function App() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] =useState(false);
@@ -17,10 +17,9 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <h1 className='text-3x1 font-bold underline'>
-        hi
-      </h1>
+     
       {loading ? "loading..." : message}
+      <Clothes />
     </div>
   );
 }
